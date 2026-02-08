@@ -1,0 +1,76 @@
+<div class="min-h-screen bg-gray-50 flex flex-col font-sans">
+
+      <mat-toolbar color="primary">
+        <div>
+          
+          <h1>
+            Half Moon Lake Yoga
+          </h1>
+          
+          <nav >
+            @if (isAdmin()) {
+              <button
+                mat-button
+                (click)="changeView('admin')"
+                [color]="view() === 'admin' ? 'accent' : undefined"
+              >
+                Admin
+              </button>
+            }
+          </nav>
+        </div>
+      </mat-toolbar>
+
+      <main class="flex-grow w-full p-4 sm:p-6 lg:p-8 flex flex-col">
+
+        @if (!isAuthReady()) {
+          <div class="spinner-container text-gray-500">
+             <div class="spinner-content">
+                <mat-progress-spinner mode="indeterminate" diameter="50"></mat-progress-spinner>
+                <p class="mt-4">Initializing application...</p>
+             </div>
+          </div>
+        }
+
+        @if (isAuthReady()) {
+          <div class="w-full h-full">
+
+            @if (view() === 'home') {
+              <div class="max-w-7xl mx-auto">
+                <app-home
+                  [classes]="sortedClasses()"
+                  (selectClass)="changeView('signup', $event)"
+                />
+              </div>
+            }
+
+            @if (view() === 'signup') {
+              <div class="w-full min-h-[70vh] py-8">
+                <app-signup
+                  [classes]="availableClasses()"
+                  [selectedClassId]="selectedClassId()"
+                  (signedUp)="changeView('home')"
+                  (cancelSignup)="changeView('home')"
+                />
+              </div>
+            }
+
+            @if (view() === 'admin') {
+              @if (isAdmin()) {
+                <div class="max-w-7xl mx-auto">
+                  <app-admin
+                    [classes]="sortedClasses()"
+                    (classActionComplete)="changeView('home')"
+                  />
+                </div>
+              } @else {
+                <div class="max-w-7xl mx-auto text-center p-12 text-red-600 bg-red-50 rounded-lg shadow-md">
+                  <p class="font-bold text-xl">Access Denied</p>
+                  <p>You do not have administrative privileges to view this page.</p>
+                </div>
+              }
+            }
+          </div>
+        }
+      </main>
+    </div>

@@ -1,0 +1,101 @@
+<div class="space-y-8">
+  <h2 class="text-4xl font-extrabold text-gray-900 border-b pb-2">Admin Dashboard</h2>
+
+  <!-- Add New Class Form -->
+  <div class="bg-white p-6 rounded-xl shadow-lg border-t-4 border-indigo-500">
+    <h3 class="text-2xl font-semibold mb-4 text-indigo-700">Add New Class</h3>
+    <form (ngSubmit)="addNewClass()" class="space-y-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+      <!-- Date/Time Picker (using datetime-local) -->
+      <div>
+        <label for="newDate" class="block text-sm font-medium text-gray-700">Date & Time</label>
+        <input type="datetime-local" id="newDate" [(ngModel)]="newClassDate" name="newClassDate" required
+               class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+      </div>
+      <!-- Location -->
+      <div>
+        <label for="newLocation" class="block text-sm font-medium text-gray-700">Location</label>
+        <input type="text" id="newLocation" [(ngModel)]="newClassLocation" name="newLocation" required
+               placeholder="e.g., Studio A or Park Meadow"
+               class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+      </div>
+
+      <div class="col-span-1 md:col-span-2 pt-2">
+        <button type="submit" [disabled]="!newClassDate || !newClassLocation || isProcessing"
+                class="w-full py-3 px-4 rounded-lg text-lg font-semibold text-white bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 transition duration-150 shadow-md">
+          {{ isProcessing ? 'Adding...' : 'Schedule Class' }}
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Manage Existing Classes -->
+  <div class="bg-white p-6 rounded-xl shadow-lg">
+    <h3 class="text-2xl font-semibold mb-4 text-gray-800">Manage Classes ({{ classes.length }})</h3>
+
+    <div class="overflow-x-auto">
+      <table class="min-w-full divide-y divide-gray-200">
+        <thead class="bg-gray-50">
+          <tr>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date/Time</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Location</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Attendees</th>
+            <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+          </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-200">
+          @for (cls of classes; track cls.id) {
+            <tr [class.bg-red-50]="cls.isCanceled">
+              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                {{ formatDateTime(cls.date) }}
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ cls.location }}</td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <span [class.text-red-600]="cls.isCanceled" [class.text-green-600]="!cls.isCanceled" class="text-sm font-semibold">
+                  {{ cls.isCanceled ? 'Canceled' : 'Active' }}
+                </span>
+              </td>
+              <td class="px-6 py-4 text-sm text-gray-500">
+                <span class="font-bold">{{ cls.attendees.length }}</span>
+                <ul class="text-xs list-disc pl-5 mt-1">
+                  @for (attendee of cls.attendees; track $index) {
+                    <li>{{ attendee }}</li>
+                  } @empty {
+                    <li>None</li>
+                  }
+                </ul>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
+                <button (click)="toggleCancel(cls)"
+                        class="text-xs font-medium rounded-full py-1 px-3 transition duration-150"
+                        [class.bg-yellow-100]="!cls.isCanceled" [class.text-yellow-800]="!cls.isCanceled" [class.hover:bg-yellow-200]="!cls.isCanceled"
+                        [class.bg-green-100]="cls.isCanceled" [class.text-green-800]="cls.isCanceled" [class.hover:bg-green-200]="cls.isCanceled">
+                  {{ cls.isCanceled ? 'Re-Activate' : 'Cancel' }}
+                </button>
+                <button (click)="deleteClass(cls.id)"
+                        class="bg-red-50 text-red-600 hover:bg-red-100 text-xs font-medium py-1 px-3 rounded-full transition duration-150">
+                  Delete
+                </button>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="5" class="px-6 py-4 text-center text-gray-500">No classes found to manage.</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Message Box -->
+  @if (message) {
+    <div [class.bg-green-100]="messageType === 'success'" [class.bg-red-100]="messageType === 'error'"
+         class="p-4 rounded-lg border mt-6"
+         [class.border-green-400]="messageType === 'success'" [class.border-red-400]="messageType === 'error'">
+      <p [class.text-green-700]="messageType === 'success'" [class.text-red-700]="messageType === 'error'" class="font-medium">
+        {{ message }}
+      </p>
+    </div>
+  }
+</div>

@@ -1,0 +1,76 @@
+<mat-card class="data-card">
+
+  <mat-card-header class="w-full">
+    <div style="display: flex; justify-content: flex-end; width: 100%;">
+      <button mat-stroked-button (click)="cancelSignup.emit()">
+        &lt; Return to Home
+      </button>
+    </div>
+  </mat-card-header>
+
+  <mat-card-title
+    style="text-align: center; font-size: 1.875rem; font-weight: 800; padding-bottom: 4px; color: var(--mat-primary-text-color);">
+    Class Registration
+  </mat-card-title>
+  <mat-divider style="margin-bottom: 1.5rem;"></mat-divider>
+
+  <mat-card-content>
+    @if (!selectedClass) {
+    <div style="text-align: center; padding: 16px; background-color: #fffbe0; border-radius: 8px; color: #9a6d01;">
+      Please select a class from the Home page.
+    </div>
+    } @else {
+    <mat-card
+      style="background-color: #e0e7ff; border: 1px solid #c7d2fe; margin-bottom: 16px; padding: 16px; box-shadow: none;">
+      <p style="font-size: 1.25rem; font-weight: bold; color: #4338ca; margin-top: 0; margin-bottom: 4px;">Location: {{
+        selectedClass.location }}</p>
+      <p style="font-size: 0.875rem; color: #4b5563; margin-top: 0; margin-bottom: 0;">
+        {{ formatDateTime(selectedClass.date) }}
+      </p>
+    </mat-card>
+
+    <form (ngSubmit)="handleSignup()" style="display: flex; flex-direction: column; gap: 1rem;">
+      <div class="relative">
+        <label for="name" style="display: block; font-size: 0.875rem; font-weight: 500; color: #374151;">Your Full
+          Name</label>
+        <input id="name" type="text" name="name" #nameInput="ngModel" [(ngModel)]="attendeeName" minlength="2" required
+          style="margin-top: 4px; display: block; width: 100%; padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 0.375rem; box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05); outline: none; transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;"
+          placeholder="E.g., Jane Doe">
+      </div>
+
+      <div style="display: flex; justify-content: flex-end; align-items: center; padding-top: 8px;">
+        @if (nameInput.valid && !isUserRegistered()) {
+        <button type="submit" mat-raised-button color="primary" [disabled]="isProcessing">
+          {{ isProcessing ? 'Signing Up...' : 'Sign Up' }}
+        </button>
+        }
+      </div>
+    </form>
+
+    @if (selectedClass && selectedClass.attendees.length > 0) {
+    <mat-card
+      style="background-color: #f9fafb; border: 1px solid #e5e7eb; margin-top: 1rem; padding: 16px; box-shadow: none;">
+      <p style="font-size: 1.125rem; font-weight: 600; color: #374151; margin-bottom: 0.75rem; margin-top: 0;">Who's
+        Signed Up?</p>
+      <ul style="display: flex; flex-direction: column; gap: 0.5rem; list-style: none; padding-left: 0;">
+        @for (attendee of selectedClass.attendees; track $index) {
+        <li
+          style="display: flex; justify-content: space-between; align-items: center; font-size: 0.875rem; color: #374151; padding: 0.5rem; background-color: white; border-radius: 0.375rem; box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);">
+          <span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ attendee }}</span>
+
+          @if (registeredName === attendee) {
+          <button (click)="removeAttendee(attendee)" [disabled]="isProcessing" mat-button color="warn"
+            style="padding: 0; min-width: 0; height: auto; font-size: 0.75rem;">
+            Unregister
+          </button>
+          }
+        </li>
+        } @empty {
+        <li style="font-size: 0.875rem; color: #6b7280; padding: 0.5rem;">No attendees signed up yet.</li>
+        }
+      </ul>
+    </mat-card>
+    }
+    }
+  </mat-card-content>
+</mat-card>

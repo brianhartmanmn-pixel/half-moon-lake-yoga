@@ -24,3 +24,23 @@ body {
     margin: 0;
     font-family: Roboto, "Helvetica Neue", sans-serif;
 }
+
+/* ADDED: Custom styles for MatSnackBar */
+.snackbar-success {
+    /* Use !important to override default Material styling */
+    background-color: #4CAF50 !important; /* Green */
+    color: white !important;
+}
+
+.snackbar-error {
+    background-color: #f44336 !important; /* Red */
+    color: white !important;
+}
+
+/* --- Added Centering Logic --- */
+.data-card {
+  display: flex;
+  flex-direction: column; /* Arrange content vertically */
+  justify-content: center; /* Vertically center content */
+  align-items: center; /* Horizontally center content */
+}
