@@ -1,7 +1,27 @@
 <div class="space-y-8">
   
   <mat-card class="mat-elevation-z8">
-    <mat-card-header class="calendar-header">
+    <!-- Mobile Header: Month Name -->
+    <div class="mobile-month-header mobile-only">
+      <h2 class="mat-h2">{{ displayMonth() }}</h2>
+    </div>
+
+    <!-- Mobile Date Navigation -->
+    <div class="mobile-date-nav mobile-only">
+      <button mat-icon-button (click)="prevEvent()" [style.visibility]="selectedEventIndex() > 0 ? 'visible' : 'hidden'" aria-label="Previous Event">
+        <mat-icon>chevron_left</mat-icon>
+      </button>
+      
+      <div class="selected-date-display">
+        {{ selectedEvent()?.date?.toDate() | date:'mediumDate' }}
+      </div>
+
+      <button mat-icon-button (click)="nextEvent()" [style.visibility]="selectedEventIndex() < sortedClasses().length - 1 ? 'visible' : 'hidden'" aria-label="Next Event">
+        <mat-icon>chevron_right</mat-icon>
+      </button>
+    </div>
+
+    <mat-card-header class="calendar-header desktop-only">
       <button mat-icon-button (click)="previousMonth()" aria-label="Previous Month">
         <mat-icon>chevron_left</mat-icon>
       </button>
@@ -27,8 +47,12 @@
                 class="calendar-day-cell"
                 [class.is-today]="isToday(day)"
                 [class.has-classes]="getClassesForDay(day).length > 0"
+                [class.is-selected]="selectedEvent() && getClassesForDay(day).includes(selectedEvent()!)"
               >
-                <div class="day-number">{{ day.getDate() }}</div>
+                <div class="day-number">
+                  <span class="mobile-weekday-label">{{ day | date:'EEE' }}</span>
+                  {{ day.getDate() }}
+                </div>
 
                 @if (getClassesForDay(day).length > 0) {
                   <div class="class-list">
@@ -54,5 +78,23 @@
         }
       </div>
     </mat-card-content>
+
+    <!-- Mobile Details Section -->
+    @if (selectedEvent(); as evt) {
+      <div class="mobile-event-details mobile-only">
+        <h3 class="mat-h3">Class Details</h3>
+        <div class="detail-row">
+          <mat-icon>schedule</mat-icon>
+          <span>{{ formatTime(evt.date) }}</span>
+        </div>
+        <div class="detail-row">
+          <mat-icon>location_on</mat-icon>
+          <span>{{ evt.location }}</span>
+        </div>
+        <button mat-raised-button color="primary" (click)="handleDayClick([evt])" [disabled]="evt.isCanceled">
+          {{ evt.isCanceled ? 'CANCELED' : 'Sign Up' }}
+        </button>
+      </div>
+    }
   </mat-card>
 </div>
