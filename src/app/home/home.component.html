@@ -13,7 +13,7 @@
       </button>
       
       <div class="selected-date-display">
-        {{ selectedEvent()?.date?.toDate() | date:'mediumDate' }}
+        {{ selectedEvent()?.date?.toDate() | date:'MMM d' }}
       </div>
 
       <button mat-icon-button (click)="nextEvent()" [style.visibility]="selectedEventIndex() < sortedClasses().length - 1 ? 'visible' : 'hidden'" aria-label="Next Event">
